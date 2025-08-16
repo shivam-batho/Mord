@@ -3,7 +3,7 @@ name: Deploy Angular App
 on:
   push:
     branches:
-      - shivam   # runs on push to main branch
+      - shivam   # Make sure this is the branch you actually push to
 
 jobs:
   build-and-deploy:
@@ -24,14 +24,19 @@ jobs:
       - name: Build Angular app
         run: npm run build -- --configuration production
 
+      - name: Verify build output
+        run: |
+          echo "Contents of dist folder:"
+          ls -R dist/
+
       - name: Deploy to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/mord/*"
+          source: "dist/mord/*"        # Make sure this matches angular.json outputPath
           target: "/var/www/html"
           strip_components: 0
           overwrite: true
-
+          timeout: 60                  # optional, prevents hanging

@@ -3,7 +3,7 @@ name: Deploy Angular App
 on:
   push:
     branches:
-      - prod   # runs on push to main branch
+      - shivam   # runs on push to main branch
 
 jobs:
   build-and-deploy:

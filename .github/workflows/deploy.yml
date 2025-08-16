@@ -10,30 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 4. Build Angular app
       - name: Build Angular app
         run: npm run build -- --configuration production
 
-      - name: Flatten dist folder
-        run: |
-          BUILD_DIR=$(ls dist)
-          echo "Build output folder: $BUILD_DIR"
-          rsync -a dist/$BUILD_DIR/ dist/
-          rm -rf dist/$BUILD_DIR
-
+      # 5. Verify build
       - name: List dist folder
         run: ls -R dist/
 
+      # 6. Clean target folder on server
+      - name: Clean server folder
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo rm -rf /var/www/html/*
+
+      # 7. Deploy to server
       - name: Deploy to Server
         uses: appleboy/scp-action@v0.1.7
         with:

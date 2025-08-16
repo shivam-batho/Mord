@@ -32,4 +32,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/mord/*"
           target: "/var/www/html"
+          strip_components: 0
+          overwrite: true
 

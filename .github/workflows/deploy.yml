@@ -3,43 +3,37 @@ name: Deploy Angular App
 on:
   push:
     branches:
-      - shivam   # replace with your actual branch if needed
+      - shivam
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build Angular app
       - name: Build Angular app
         run: npm run build -- --configuration production
 
-      # 5. Move contents out of project folder (removes extra 'mord' folder)
       - name: Flatten dist folder
         run: |
           BUILD_DIR=$(ls dist)
           echo "Build output folder: $BUILD_DIR"
-          mv dist/$BUILD_DIR/* dist/
+          rsync -a dist/$BUILD_DIR/ dist/
+          rm -rf dist/$BUILD_DIR
 
-      # 6. Verify contents
       - name: List dist folder
         run: ls -R dist/
 
-      # 7. Deploy to server
       - name: Deploy to Server
         uses: appleboy/scp-action@v0.1.7
         with:

@@ -54,6 +54,7 @@ jobs:
           source: "dist/Modernize/browser/*"
           target: "/var/www/html"
           overwrite: true
+          strip_components: 3
 
       # 8. Fix permissions on server
       - name: Set server permissions
